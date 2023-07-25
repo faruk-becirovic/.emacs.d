@@ -11,6 +11,12 @@
 (add-to-list 'load-path "~/.emacs.d/better-defaults")
 (require 'better-defaults)
 
+(defun restore-menu-bar()
+  (interactive)
+  (if (fboundp 'menu-bar-mode) (menu-bar-mode 1)))
+
+(restore-menu-bar)
+
 ;; Helm mode
 (use-package helm
   :init
@@ -38,6 +44,15 @@
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (lsp))))  ; or lsp-deferred
+
+;; M-x lsp-install-server RET jsts-ls RET.
+;; npm i -g javascript-typescript-langserver
+
+;; M-x lsp-install-server RET json-ls RET.
+;; Automatic or manual by npm i -g vscode-langservers-extracted
+
+;; M-x lsp-install-server RET dockerfile-ls RET.
+;; npm install -g dockerfile-language-server-nodejs
 
 ;; Company mode
 (use-package company
@@ -76,11 +91,28 @@
 (projectile-mode +1)
 (setq projectile-project-search-path '("~/Projects/" ))
 
+;; Rainbow delimeters
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
 ;; Minimap mode
 (use-package minimap)
 (minimap-mode 1)
 (add-to-list 'minimap-major-modes 'html-mode)
 (add-to-list 'minimap-major-modes 'org-mode)
+
+;; Aggresive indent
+(use-package aggressive-indent)
+(global-aggressive-indent-mode 1)
+
+;; Bracket closing behaviour
+(electric-pair-mode t)
+(add-hook 'c-mode-common-hook '(lambda ()
+  (local-set-key (kbd "RET") 'newline-and-indent)))
+
+;; Ido setup
+(require 'ido)
+(ido-mode t)
 
 ;; Org babel setup
 (org-babel-do-load-languages
@@ -91,7 +123,7 @@
    (latex . t)
    (js . t)
    (python . t)
-   (sql .t)))
+   (sql . t)))
 
 (use-package pyvenv
   :init
@@ -99,7 +131,18 @@
   (setq venv-initialize-eshell t) ;; if you want eshell support
   (setq venv-location "/home/faruk/.virtualenvs/"))
 
-(load-theme 'whiteboard-custom t)
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'material t)
+
+;; Set highlight colur for the minimap in dark themes.
+(custom-set-faces
+  '(minimap-active-region-background
+    ((((background dark)) (:background "#5F345F"))
+      (t (:background "#F19BF1")))
+    "Face for the active region in the minimap.
+By default, this is only a different background color."
+    :group 'minimap))
+
 (global-display-line-numbers-mode)
 
 (custom-set-variables
